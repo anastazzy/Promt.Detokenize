@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -20,8 +21,8 @@ namespace Promt.Detokenize
 
         public class Result
         {
-            public string OriginalText { get; set; }
-            public string TranslationText { get; set; }
+            public string? OriginalText { get; set; }
+            public string? TranslationText { get; set; }
             public Match Match { get; set; }
 
             public Result(string originalText, string translationText, Match match)
@@ -32,13 +33,36 @@ namespace Promt.Detokenize
             }
         }
 
+        public struct Range
+        {
+            public string IndexStartOriginal { get; set; }
+            public string LengthOriginal { get; set; }
+            public string IndexStartTranslate { get; set; }
+            public string LengthTranslate { get; set; }
+        }
+
+        public class FinalRange
+        {
+            public string OriginalText { get; set; }
+            public string TranslateText { get; set; }
+            public Range[] RangeWords { get; set; }
+
+            public FinalRange(string originalText, string translateText, Range[] rangeWords)
+            {
+                OriginalText = originalText;
+                TranslateText = translateText;
+                RangeWords = rangeWords;
+            }
+        }
+
         public List<string> ItsNotWork(string str)
         {
             var arrayString = CreateArrayStrings(str);
             var matchList = CreateStringRange(arrayString[2]);
-            var str1 = CreateArrayTokens(arrayString[0]);
-            var str2 = CreateArrayTokens(arrayString[1]);
+            var str1 = CreateArrayTokens((arrayString[0]));
+            var str2 = CreateArrayTokens((arrayString[1]));
             var aaa = MatchStr(str1, str2, matchList);
+
             return aaa;
         }
 
@@ -52,24 +76,22 @@ namespace Promt.Detokenize
         }
         
         //создание структуры соответствий
-        public List<Match> CreateStringRange(string strRange)
+        public List<Range> CreateStringRange(string strRange)
         {
-            List<Match> strIndex = new();
+            List<Range> strIndex = new();
             var coupleIndex = strRange.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var index in coupleIndex)
             {
                 var arrayIndex = index.Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
                 var temp1 = Convert.ToInt32(arrayIndex[0]);
                 var temp2 = Convert.ToInt32(arrayIndex[1]);
-                strIndex.Add(new Match
-                {
-                    OriginalIndex = temp1,
-                    TranslationIndex = temp2
-                });
+                strIndex.Add(new Range
+                );
             }
 
             return strIndex;
         }
+
         //разделение строки на токены - массив токенов для 1 и 2 масссивов 
         public string[] CreateArrayTokens(string strTokens)
         {
@@ -77,34 +99,42 @@ namespace Promt.Detokenize
             return token;
         }
 
-        public List<string> MatchStr(string[] str1, string[] str2, List<Match> chart)
+        public List<Result> MatchStr(string[] str1, string[] str2, List<Match> chart)
         {
             var bigResult = new List<Result>();
-            for (var i = 0; i < chart.Count; i ++)
+            for (var i = 0; i < chart.Count; i++)
             {
-                if ((str1.Length> chart[i].OriginalIndex) && (str2.Length > chart[i].TranslationIndex))
+                if ((str1.Length > chart[i].OriginalIndex) && (str2.Length > chart[i].TranslationIndex))
                 {
                     var r = new Result(str1[chart[i].OriginalIndex], str2[chart[i].TranslationIndex], chart[i]);
                     bigResult.Add(r);
                 }
             }
 
-            var transResult1 = bigResult.Select(x => x.OriginalText);
-            var resultResult1 = UsageStaffTokens(string.Join(' ', transResult1));
-            var resultAfterDetokenize = UsageStaffTokens(string.Join(" ", str1));
-            
+            return bigResult;
+        }
 
-            var transResult2 = bigResult.Select(x => x.TranslationText);
+        public void CreateRangeStr(string strOriginal, List<Result> resultMatch)
+        {
+            //получение оригинального текста с примененными токенами
+            var transResult1 = resultMatch.Select(x => x.OriginalText);
+            var resultResult1 = UsageStaffTokens(string.Join(" ", transResult1));
+
+
+            //получение переведенного текста с примененными токенами
+            var transResult2 = resultMatch.Select(x => x.TranslationText);
             var resultResult2 = UsageStaffTokens(string.Join(' ', transResult2));
+
+            for (var i = 0; i < resultMatch.Count; i++)
+            {
+            }
 
             var res = Print(resultResult1);
             List<string> resList = new();
             resList.Add(res);
             res = Print(resultResult2);
             resList.Add(res);
-            res = Print(resultAfterDetokenize);
-            resList.Add(res);
-            return resList;
+            return;
         }
         
 
@@ -213,6 +243,8 @@ namespace Promt.Detokenize
             return strToken;
         }
 
+
+
         public string Print(string str)
         {
             var strin = "";
@@ -224,6 +256,7 @@ namespace Promt.Detokenize
 
             return strin;
         }
+
     }
 
 
@@ -250,3 +283,4 @@ namespace Promt.Detokenize
         }
     }
 }
+*/

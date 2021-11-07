@@ -6,7 +6,7 @@ namespace Promt.Detokenize
     {
         static void Main(string[] args)
         {
-            TokenStringService tokenService = new TokenStringService();
+            
         }
     }
 }
